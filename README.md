@@ -19,33 +19,36 @@ sudo losetup -fP loopbackfile3.img
 sudo losetup -fP loopbackfile4.img
 sudo losetup -a
 ```
-![](images/1.png)
+![](images/image_2020-12-25_09-53-17.png)
+![](images/image_2020-12-25_09-53-54.png)
+![](images/image_2020-12-25_09-54-14.png)
 ##### Создаём массив RAID10:
-`mdadm --create /dev/md0 -l 10 -n 4 /dev/loop{18..21}`
-![](images/2.png)
+```
+mdadm --create /dev/md0 -l 10 -n 4 /dev/loop{15..18}
+```
+![](images/image_2020-12-25_10-00-27.png)
 ##### Проверяем состояние:
 ```
 cat /proc/mdstat
-mdadm --detail /dev/md0`
+mdadm --detail /dev/md0
 ```
-![](images/3.png)
+![](images/image_2020-12-25_10-00-52.png)
+![](images/image_2020-12-25_10-02-10.png)
 ##### Пометим диск как сбойный и извлечём его мз массива:
 ```
-mdadm /dev/md0 --fail /dev/loop18 
-mdadm /dev/md0 --remove /dev/loop18
+mdadm /dev/md0 --fail /dev/loop15 
+mdadm /dev/md0 --remove /dev/loop15
 cat /proc/mdstat
 mdadm --detail /dev/md0
 ```
-![](images/4.png)
+![](images/image_2020-12-25_10-04-06.png)
 ##### Добавим чистый диск в массив взамен удалённого:
 ```
-mdadm --add /dev/md0 /dev/loop22
+mdadm --add /dev/md0 /dev/loop14
 cat /proc/mdstat
 mdadm --detail /dev/md0
 ```
-![](images/5.png)
-##### Добавим ещё диск:
-`mdadm --add /dev/md0 /dev/loop0`
+![](images/image_2020-12-25_10-06-04.png)
 ##### Создадим конфигурационный файл:
 ```
 sudo -i
@@ -56,13 +59,19 @@ mdadm --detail --scan > /etc/mdadm.conf
 mdadm --stop /dev/md0
 mdadm --assemble --scan
 ```
-![](images/6.png)
+![](images/image_2020-12-25_10-08-45.png)
 ##### Создаём раздел:
-`fdisk /dev/md0`
-![](images/7.png)
+```
+fdisk /dev/md0
+```
+![](images/image_2020-12-25_10-10-59.png)
 ##### Создаём файловую систему:
-`mkfs.ext4 /dev/md0p1`
+```
+mkfs.ext4 /dev/md0p1
+```
 ##### Редактируем файл fstab
 ##### Выполнить монтирование:
-`mount -a `
-![](images/8.png)
+```
+mount -a
+```
+![](images/image_2020-12-25_10-15-18.png)
